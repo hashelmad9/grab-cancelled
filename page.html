@@ -197,7 +197,7 @@
     function extractShipmentId(raw) {
       try {
         const parsed = JSON.parse(raw);
-        if (parsed && parsed.code) return parsed.code;
+        if (parsed && parsed.code) return stringify(parsed.code).code;
       } catch {}
       return raw;
     }
@@ -255,12 +255,30 @@
     loader.remove();
   }
 }
-    document.getElementById("textField").addEventListener("input", () => {
-      clearTimeout(submitTimer);
-      submitTimer = setTimeout(() => {
-        submitData();
-      }, 1000);
-    });
+   document.getElementById("textField").addEventListener("input", (e) => {
+  clearTimeout(submitTimer);
+
+  try {
+    const input = e.target.value.trim();
+    const parsed = JSON.parse(input);
+
+    if (
+      parsed &&
+      parsed.client === "Sabil" &&
+      parsed.type === "Orders" &&
+      typeof parsed.code === "number"
+    ) {
+      e.target.value = parsed.code.toString();
+    }
+  } catch (_) {
+    // Not a JSON or doesn't match pattern — do nothing
+  }
+
+  submitTimer = setTimeout(() => {
+    submitData();
+  }, 1000);
+});
+
   </script>
 </body>
 </html>
